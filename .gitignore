@@ -112,3 +112,9 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Personales / generados
+.vscode/
+/UIElementsSchema/
+/Assets/_Recovery/
+/Assets/_Recovery.meta
