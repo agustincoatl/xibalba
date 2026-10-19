@@ -32,6 +32,8 @@ public class MenuSystem : MonoBehaviour
     }
     public void Regresar ()
     {
+        if (TransitionManager.Instance != null)
+        Destroy(TransitionManager.Instance.gameObject);
         SceneManager.LoadScene("Menu");
     }
 }
