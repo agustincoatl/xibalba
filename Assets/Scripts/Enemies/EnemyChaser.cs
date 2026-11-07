@@ -105,7 +105,7 @@ public class EnemyChaser : MonoBehaviour, IDamageable
         if (player == null && findPlayerTimer <= 0f)
         {
             findPlayerTimer = 1f;
-            player = FindFirstObjectByType<PlayerController>();
+            player = FindAnyObjectByType<PlayerController>();
         }
 
         if (player == null || player.IsDead)

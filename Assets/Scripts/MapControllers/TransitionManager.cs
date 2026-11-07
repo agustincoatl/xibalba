@@ -58,7 +58,7 @@ public class TransitionManager : MonoBehaviour
 
         yield return SceneManager.LoadSceneAsync(sceneName);
 
-        foreach (var sp in FindObjectsByType<SpawnPoint>(FindObjectsSortMode.None))
+        foreach (var sp in FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude))
         {
             if (sp.id == spawnId)
             {

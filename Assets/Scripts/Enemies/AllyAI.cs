@@ -122,7 +122,7 @@ public class AllyAI : MonoBehaviour, IDamageable
 
     private Transform FindPlayer()
     {
-        PlayerController p = FindFirstObjectByType<PlayerController>();
+        PlayerController p = FindAnyObjectByType<PlayerController>();
         return p != null ? p.transform : null;
     }
 
