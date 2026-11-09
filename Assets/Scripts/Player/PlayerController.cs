@@ -287,6 +287,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, force);
         jumpBufferCounter = 0f;
         coyoteCounter = 0f;
+        AudioManager.PlaySalto();
     }
 
     private void WallJump()
@@ -301,6 +302,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         doubleJumpAvailable = true; // al saltar de una pared se recuperan el doble salto y el dash aéreo
         airDashAvailable = true;
         isWallSliding = false;
+        AudioManager.PlaySalto();
     }
 
     private void HandleGravity()
@@ -346,11 +348,13 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (currentHealth <= 0)
         {
+            AudioManager.PlayMuerte();
             StopAllCoroutines();
             StartCoroutine(DieRoutine());
             return;
         }
 
+        AudioManager.PlayDanio();
         StartCoroutine(InvulnerabilityRoutine());
         ApplyKnockback(sourcePosition);
     }

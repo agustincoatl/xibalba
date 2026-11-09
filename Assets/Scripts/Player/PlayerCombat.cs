@@ -45,6 +45,7 @@ public class PlayerCombat : MonoBehaviour
         if (kb.jKey.wasPressedThisFrame && attackTimer <= 0f)
         {
             attackTimer = attackCooldown;
+            AudioManager.PlayAtaque();
             StartCoroutine(MeleeRoutine());
         }
 
@@ -91,6 +92,7 @@ public class PlayerCombat : MonoBehaviour
         Vector3 pos = transform.position + new Vector3(throwOffset.x * dir, throwOffset.y, 0f);
         ThrowableWeapon projectile = Instantiate(throwablePrefab, pos, Quaternion.identity);
         projectile.Launch(new Vector2(dir, 0f), Team.Player);
+        AudioManager.PlayAtaque();
     }
 
     private Vector2 AttackPosition()
