@@ -21,8 +21,8 @@ public class AbilityPickup : MonoBehaviour
     [Tooltip("Variación de tamaño (ej. 0.15 = +/- 15% del tamaño base)")]
     [SerializeField] private float scaleAmount = 0.15f;
 
-    [Tooltip("Velocidad de rotación en el eje Z (grados por segundo)")]
-    [SerializeField] private float rotationSpeed = 45f;
+    [Tooltip("Velocidad de rotación en el eje Y (grados por segundo)")]
+    [SerializeField] private float rotationSpeed = 90f;
 
     private Vector3 baseScale;
 
@@ -38,8 +38,8 @@ public class AbilityPickup : MonoBehaviour
         float factor = Mathf.Sin(Time.time * scaleSpeed) * scaleAmount;
         transform.localScale = baseScale * (1f + factor);
 
-        // 2. Rotación continua sobre el eje Z (ideal para Sprites / 2D)
-        transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime);
+        // 2. Rotación continua sobre el eje Y (como una pieza en un pedestal)
+        transform.Rotate(0f, rotationSpeed * Time.deltaTime, 0f);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

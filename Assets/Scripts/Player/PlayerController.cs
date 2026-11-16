@@ -63,6 +63,17 @@ public class PlayerController : MonoBehaviour, IDamageable
     public bool IsWallSliding => isWallSliding;
     public bool IsDead => isDead;
     public bool CanAct => !isDead && !isDashing && hitStunTimer <= 0f;
+    public bool IsHurt => hitStunTimer > 0f;
+    public bool IsInvulnerable => isInvulnerable;
+    public bool IsTouchingWall => touchingWall;
+
+    // --- Nuevas propiedades de movimiento y velocidad para el Animator / Scripts ---
+    public bool IsWalking => isGrounded && Mathf.Abs(xAxis) > 0.05f && !isDashing;
+    public bool IsJumping => !isGrounded && rb != null && rb.linearVelocity.y > 0.1f && !isWallSliding;
+    public bool IsFalling => !isGrounded && rb != null && rb.linearVelocity.y < -0.1f && !isWallSliding;
+    public float HorizontalSpeed => rb != null ? Mathf.Abs(rb.linearVelocity.x) : 0f;
+    public float VerticalSpeed => rb != null ? rb.linearVelocity.y : 0f;
+    public float MoveInput => xAxis;
 
     // Referencias
     private Rigidbody2D rb;
