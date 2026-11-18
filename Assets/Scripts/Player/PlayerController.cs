@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
@@ -33,27 +33,27 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private bool invulnerableWhileDashing = true;
 
     [Header("Pared")]
-    [SerializeField] private float wallSlideSpeed = 2f;                           // velocidad máxima de caída pegado a la pared
+    [SerializeField] private float wallSlideSpeed = 2f;                           // velocidad mÃ¡xima de caÃ­da pegado a la pared
     [SerializeField] private Vector2 wallJumpForce = new Vector2(10f, 14f);       // empuje horizontal y vertical
     [SerializeField] private float wallJumpLockTime = 0.2f;                       // tiempo sin control horizontal tras el salto
     [SerializeField] private float wallCheckDistance = 0.1f;
 
-    [Header("Vida y daño")]
+    [Header("Vida y daÃ±o")]
     public int maxHealth = 5;
     public int currentHealth;
     public float invulnerabilityDuration = 1f;
     [SerializeField] private float knockbackForceX = 6f;
     [SerializeField] private float knockbackForceY = 8f;
     [SerializeField] private float hitStunDuration = 0.2f;
-    [SerializeField] private float deathDelay = 0.8f; // pausa antes de reaparecer (aquí irá la animación de muerte)
+    [SerializeField] private float deathDelay = 0.8f; // pausa antes de reaparecer (aquÃ­ irÃ¡ la animaciÃ³n de muerte)
 
     [Header("Suelo")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
-    [Header("Caída al vacío")]
-    [SerializeField] private float fallLimitY = -30f; // ajusta según la sala
+    [Header("CaÃ­da al vacÃ­o")]
+    [SerializeField] private float fallLimitY = -30f; // ajusta segÃºn la sala
 
     // --- Lo que otros scripts pueden consultar (animaciones, combate, etc.) ---
     public Team DamageTeam => Team.Player;
@@ -79,6 +79,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private Rigidbody2D rb;
     private Collider2D col;
     private SpriteRenderer spriteRenderer;
+    private PlayerAnimation playerAnimation;
 
     // Entrada
     private float xAxis;
@@ -111,6 +112,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        playerAnimation = GetComponent<PlayerAnimation>();
     }
 
     private void OnEnable()
@@ -122,7 +124,35 @@ public class PlayerController : MonoBehaviour, IDamageable
         isInvulnerable = false;
         hitStunTimer = 0f;
         wallJumpLockTimer = 0f;
+        if (rb != null) rb.simulated = true;
+        if (col != null) col.enabled = true;
         if (spriteRenderer != null) spriteRenderer.enabled = true;
+    }
+
+    // Restaura al jugador tras morir/reintentar (llamado por GameManager/flujo de Game Over).
+    public void Revive(int health, bool refillToMax = false)
+    {
+        isDead = false;
+        isDashing = false;
+        isInvulnerable = false;
+        hitStunTimer = 0f;
+        wallJumpLockTimer = 0f;
+
+        if (rb != null)
+        {
+            rb.simulated = true;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
+        if (col != null) col.enabled = true;
+        if (spriteRenderer != null) spriteRenderer.enabled = true;
+
+        currentHealth = refillToMax ? maxHealth : Mathf.Clamp(health, 1, Mathf.Max(1, maxHealth));
+
+        if (playerAnimation != null) playerAnimation.ResetAnimationState();
+
+        ResetSafePosition();
     }
 
     private void Start()
@@ -169,7 +199,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (wallJumpLockTimer <= 0f)
             rb.linearVelocity = new Vector2(walkSpeed * xAxis, rb.linearVelocity.y);
 
-        // Deslizamiento: limita la velocidad de caída pegado a la pared
+        // Deslizamiento: limita la velocidad de caÃ­da pegado a la pared
         if (isWallSliding && rb.linearVelocity.y < -wallSlideSpeed)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -wallSlideSpeed);
     }
@@ -211,7 +241,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         bool touching = groundCheck != null &&
                         Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        // "vy <= 0.1": justo después de saltar todavía estamos cerca del suelo, pero ya no cuenta como tocarlo
+        // "vy <= 0.1": justo despuÃ©s de saltar todavÃ­a estamos cerca del suelo, pero ya no cuenta como tocarlo
         isGrounded = touching && rb.linearVelocity.y <= 0.1f;
 
         if (isGrounded)
@@ -261,7 +291,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (dashCooldownTimer > 0f || hitStunTimer > 0f) return;
         if (!isGrounded && !airDashAvailable) return; // un dash en el aire hasta volver a tocar suelo
 
-        // Si estamos deslizándonos por una pared, el dash nos aleja de ella
+        // Si estamos deslizÃ¡ndonos por una pared, el dash nos aleja de ella
         if (isWallSliding) SetFacing(!FacingRight);
 
         dashDirection = FacingRight ? 1f : -1f;
@@ -298,6 +328,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, force);
         jumpBufferCounter = 0f;
         coyoteCounter = 0f;
+        AudioManager.PlaySalto();
     }
 
     private void WallJump()
@@ -309,9 +340,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         wallJumpLockTimer = wallJumpLockTime;
         jumpBufferCounter = 0f;
         coyoteCounter = 0f;
-        doubleJumpAvailable = true; // al saltar de una pared se recuperan el doble salto y el dash aéreo
+        doubleJumpAvailable = true; // al saltar de una pared se recuperan el doble salto y el dash aÃ©reo
         airDashAvailable = true;
         isWallSliding = false;
+        AudioManager.PlaySalto();
     }
 
     private void HandleGravity()
@@ -330,7 +362,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             rb.gravityScale = defaultGravityScale;
     }
 
-    // ---------------------------------------------------------------- ORIENTACIÓN
+    // ---------------------------------------------------------------- ORIENTACIÃ“N
 
     private void HandleFacing()
     {
@@ -346,7 +378,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         transform.localScale = s;
     }
 
-    // ---------------------------------------------------------------- DAÑO Y MUERTE
+    // ---------------------------------------------------------------- DAÃ‘O Y MUERTE
 
     public void TakeDamage(int amount, Vector2 sourcePosition)
     {
@@ -357,11 +389,13 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (currentHealth <= 0)
         {
+            AudioManager.PlayMuerte();
             StopAllCoroutines();
             StartCoroutine(DieRoutine());
             return;
         }
 
+        AudioManager.PlayDanio();
         StartCoroutine(InvulnerabilityRoutine());
         ApplyKnockback(sourcePosition);
     }
@@ -394,19 +428,58 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         isDead = true;
         isDashing = false;
+
+        // Congelar fisicas del jugador al morir para evitar comportamientos extranos mientras se activa la UI
         rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        rb.simulated = false;
+        if (col != null) col.enabled = false;
+
         if (spriteRenderer != null) spriteRenderer.enabled = true;
 
-        yield return new WaitForSeconds(deathDelay);
+        // Usar tiempo real para que la pausa funcione aunque se congele el juego
+        yield return new WaitForSecondsRealtime(deathDelay);
 
-        if (TransitionManager.Instance != null)
-            TransitionManager.Instance.Respawn(); // vuelve al checkpoint con la vida llena
+        // Invocar evento/sistema de derrota en lugar de recargar la escena de inmediato
+        MonoBehaviour gameOver = null;
+        var behaviours = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include);
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            if (behaviours[i] != null && behaviours[i].GetType().Name == "GameOverManager")
+            {
+                gameOver = behaviours[i];
+                break;
+            }
+        }
+
+        if (gameOver == null)
+        {
+            System.Type gomType = System.Type.GetType("GameOverManager")
+                ?? System.Type.GetType("GameOverManager, Assembly-CSharp");
+
+            if (gomType != null)
+            {
+                GameObject go = new GameObject("GameOverManager");
+                gameOver = go.AddComponent(gomType) as MonoBehaviour;
+            }
+        }
+
+        if (gameOver != null)
+        {
+            gameOver.SendMessage("ShowGameOver", SendMessageOptions.DontRequireReceiver);
+        }
         else
-            UnityEngine.SceneManagement.SceneManager.LoadScene(
-                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        {
+            // Fallback si no se pudo crear el manager: recarga/respawn como antes
+            if (TransitionManager.Instance != null)
+                TransitionManager.Instance.Respawn();
+            else
+                UnityEngine.SceneManagement.SceneManager.LoadScene(
+                    UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        }
     }
 
-    // ---------------------------------------------------------------- CAÍDA AL VACÍO
+    // ---------------------------------------------------------------- CAÃDA AL VACÃO
 
     private void CheckFallLimit()
     {
@@ -441,3 +514,4 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 }
+

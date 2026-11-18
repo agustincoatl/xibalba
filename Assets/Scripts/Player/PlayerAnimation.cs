@@ -8,6 +8,7 @@ public class PlayerAnimation : MonoBehaviour
     [Header("Animator")]
     [SerializeField] private Animator animator;
     [SerializeField] private string speedParameter = "Speed";
+    [SerializeField] private string walkingParameter = "IsWalking";
     [SerializeField] private string groundedParameter = "Grounded";
     [SerializeField] private string verticalSpeedParameter = "VerticalSpeed";
     [SerializeField] private string dashTrigger = "Dash";
@@ -27,6 +28,7 @@ public class PlayerAnimation : MonoBehaviour
     private Rigidbody2D rb;
 
     private int speedHash;
+    private int walkingHash;
     private int groundedHash;
     private int verticalSpeedHash;
     private int dashHash;
@@ -35,6 +37,7 @@ public class PlayerAnimation : MonoBehaviour
     private int deadHash;
 
     private bool hasSpeed;
+    private bool hasWalking;
     private bool hasGrounded;
     private bool hasVerticalSpeed;
     private bool hasDash;
@@ -76,13 +79,14 @@ public class PlayerAnimation : MonoBehaviour
 
     private void CacheParameters()
     {
-        hasSpeed = hasGrounded = hasVerticalSpeed = false;
+        hasSpeed = hasWalking = hasGrounded = hasVerticalSpeed = false;
         hasDash = hasAttack = hasHurt = hasDead = false;
 
         if (animator == null)
             return;
 
         speedHash = Animator.StringToHash(speedParameter);
+        walkingHash = Animator.StringToHash(walkingParameter);
         groundedHash = Animator.StringToHash(groundedParameter);
         verticalSpeedHash = Animator.StringToHash(verticalSpeedParameter);
         dashHash = Animator.StringToHash(dashTrigger);
@@ -95,6 +99,7 @@ public class PlayerAnimation : MonoBehaviour
         {
             int hash = parameters[i].nameHash;
             if (hash == speedHash) hasSpeed = true;
+            else if (hash == walkingHash) hasWalking = true;
             else if (hash == groundedHash) hasGrounded = true;
             else if (hash == verticalSpeedHash) hasVerticalSpeed = true;
             else if (hash == dashHash) hasDash = true;
@@ -104,6 +109,29 @@ public class PlayerAnimation : MonoBehaviour
         }
     }
 
+    // Reinicia el Animator a su estado por defecto (usado al revivir tras morir/reintentar).
+    public void ResetAnimationState()
+    {
+        wasDashing = false;
+        wasAttacking = false;
+        wasDead = false;
+        if (player != null) lastHealth = player.currentHealth;
+
+        if (animator == null) return;
+
+        if (hasDash) animator.ResetTrigger(dashHash);
+        if (hasAttack) animator.ResetTrigger(attackHash);
+        if (hasHurt) animator.ResetTrigger(hurtHash);
+        if (hasDead) animator.SetBool(deadHash, false);
+
+        animator.Rebind();
+        animator.Update(0f);
+
+        if (hasSpeed) animator.SetFloat(speedHash, idlePlayback);
+        if (hasWalking) animator.SetBool(walkingHash, false);
+        if (hasGrounded) animator.SetBool(groundedHash, true);
+    }
+
     private void Update()
     {
         if (animator == null || animator.runtimeAnimatorController == null)
@@ -111,6 +139,7 @@ public class PlayerAnimation : MonoBehaviour
 
         UpdateTriggers();
 
+        if (hasWalking) animator.SetBool(walkingHash, player.IsWalking);
         if (hasGrounded) animator.SetBool(groundedHash, player.IsGrounded);
         if (hasVerticalSpeed && rb != null) animator.SetFloat(verticalSpeedHash, rb.linearVelocity.y);
         if (hasDead) animator.SetBool(deadHash, player.IsDead);

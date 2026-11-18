@@ -30,6 +30,7 @@ public class TransitionManager : MonoBehaviour
     public void GoTo(string sceneName, string spawnId)
     {
         if (busy) return;
+        AudioManager.PlayCambioEscena();
         StartCoroutine(TransitionRoutine(sceneName, spawnId, false));
     }
 
@@ -88,5 +89,10 @@ public class TransitionManager : MonoBehaviour
             yield return null;
         }
         fadeGroup.alpha = target;
+    }
+
+    public void ResetSafePosition()
+    {
+        if (player != null) player.ResetSafePosition();
     }
 }

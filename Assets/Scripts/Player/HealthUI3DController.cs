@@ -39,6 +39,7 @@ public class HealthUI3DController : MonoBehaviour
     private int builtMaxHealth = -1;
     private int lastHealth = -1;
     private float nextPlayerSearch;
+    private bool sceneSuppressed;
 
     private GameObject scaffoldRoot;
     private Canvas canvas;
@@ -121,6 +122,17 @@ public class HealthUI3DController : MonoBehaviour
 
     private void BindToScene()
     {
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName == "Menu" || sceneName == "Credits" || sceneName == "Controlls")
+        {
+            sceneSuppressed = true;
+            player = null;
+            SetHudVisible(false);
+            return;
+        }
+
+        sceneSuppressed = false;
+
         PlayerController found = FindAnyObjectByType<PlayerController>();
         if (found == null)
         {
@@ -160,6 +172,8 @@ public class HealthUI3DController : MonoBehaviour
 
     private void Update()
     {
+        if (sceneSuppressed) return;
+
         if (player == null)
         {
             if (!hudReady) return;

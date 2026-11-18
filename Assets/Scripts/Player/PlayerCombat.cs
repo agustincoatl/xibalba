@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,12 +9,12 @@ using System.Collections.Generic;
 public class PlayerCombat : MonoBehaviour
 {
     [Header("Ataque cuerpo a cuerpo")]
-    [SerializeField] private Vector2 attackOffset = new Vector2(1f, 0f); // posición del golpe respecto al jugador (X se invierte según hacia dónde mira)
+    [SerializeField] private Vector2 attackOffset = new Vector2(1f, 0f); // posiciÃ³n del golpe respecto al jugador (X se invierte segÃºn hacia dÃ³nde mira)
     [SerializeField] private float attackRadius = 0.8f;
     [SerializeField] private int attackDamage = 1;
     [SerializeField] private float attackCooldown = 0.35f;
-    [SerializeField] private float attackHitDelay = 0.08f; // retraso hasta que "conecta" el golpe (sincroniza con la animación)
-    [SerializeField] private LayerMask attackLayers;       // vacío = golpea cualquier capa
+    [SerializeField] private float attackHitDelay = 0.08f; // retraso hasta que "conecta" el golpe (sincroniza con la animaciÃ³n)
+    [SerializeField] private LayerMask attackLayers;       // vacÃ­o = golpea cualquier capa
 
     [Header("Arma lanzable")]
     public bool hasThrowable = true; // pon en false para desbloquearla con una mejora
@@ -66,13 +66,15 @@ public class PlayerCombat : MonoBehaviour
 
     private void DoMeleeHit()
     {
+        AudioManager.PlayAtaque();
+
         Collider2D[] hits = Physics2D.OverlapCircleAll(AttackPosition(), attackRadius, attackLayers);
         HashSet<IDamageable> alreadyHit = new HashSet<IDamageable>(); // un enemigo con varios colliders recibe un solo golpe
 
         for (int i = 0; i < hits.Length; i++)
         {
             IDamageable target = hits[i].GetComponentInParent<IDamageable>();
-            if (target == null || target.DamageTeam == Team.Player) continue; // no golpea a aliados ni a sí mismo
+            if (target == null || target.DamageTeam == Team.Player) continue; // no golpea a aliados ni a sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ mismo
             if (!alreadyHit.Add(target)) continue;
 
             target.TakeDamage(attackDamage, transform.position);
@@ -106,3 +108,4 @@ public class PlayerCombat : MonoBehaviour
         Gizmos.DrawWireSphere(AttackPosition(), attackRadius);
     }
 }
+

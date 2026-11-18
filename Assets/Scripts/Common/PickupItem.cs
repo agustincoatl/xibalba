@@ -4,6 +4,9 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Collider2D))]
 public class PickupItem : MonoBehaviour
 {
+    [Header("Puntos")]
+    [SerializeField] private int points = 1;
+
     [Header("Recogida")]
     [SerializeField] private float pickupDelay = 0.25f;
     [SerializeField] private bool destroyOnPickup = true;
@@ -33,6 +36,9 @@ public class PickupItem : MonoBehaviour
 
         pickedUp = true;
         if (col != null) col.enabled = false;
+
+        if (points != 0)
+            ScoreManager.AddPoints(points);
 
         if (onPickup != null) onPickup.Invoke();
 
