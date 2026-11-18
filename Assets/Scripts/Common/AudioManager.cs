@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
@@ -87,6 +87,7 @@ public class AudioManager : MonoBehaviour
         if (musicSource != null) musicSource.Stop();
     }
 
+    // Atajos seguros: no dan error aunque no haya AudioManager en la escena
     public static void PlaySalto() { if (Instance != null) Instance.Play(Instance.salto); }
     public static void PlayDanio() { if (Instance != null) Instance.Play(Instance.danio); }
     public static void PlayMuerte() { if (Instance != null) Instance.Play(Instance.muerte); }
