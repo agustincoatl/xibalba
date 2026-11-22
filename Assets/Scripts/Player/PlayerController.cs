@@ -67,6 +67,26 @@ public class PlayerController : MonoBehaviour, IDamageable
     public bool IsInvulnerable => isInvulnerable;
     public bool IsTouchingWall => touchingWall;
 
+    // --- Llave de Jade ---
+    // El inventario es la fuente de verdad para que el estado sobreviva entre salas.
+    public bool HasJadeKey => KeyInventory.HasKey(KeyInventory.JadeKeyId);
+
+    public void CollectJadeKey(string keyId = KeyInventory.JadeKeyId)
+    {
+        if (string.IsNullOrWhiteSpace(keyId))
+            keyId = KeyInventory.JadeKeyId;
+
+        KeyInventory.AddKey(keyId);
+    }
+
+    public bool ConsumeJadeKey(string keyId = KeyInventory.JadeKeyId)
+    {
+        if (string.IsNullOrWhiteSpace(keyId))
+            keyId = KeyInventory.JadeKeyId;
+
+        return KeyInventory.RemoveKey(keyId);
+    }
+
     // --- Nuevas propiedades de movimiento y velocidad para el Animator / Scripts ---
     public bool IsWalking => isGrounded && Mathf.Abs(xAxis) > 0.05f && !isDashing;
     public bool IsJumping => !isGrounded && rb != null && rb.linearVelocity.y > 0.1f && !isWallSliding;

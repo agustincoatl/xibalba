@@ -27,6 +27,7 @@ public class EnemyPatrol : MonoBehaviour, IDamageable
     [SerializeField] private float turnCooldown = 0.3f;    // evita girar varias veces seguidas
 
     public Team DamageTeam => Team.Enemy;
+    public event System.Action Died;
 
     private Rigidbody2D rb;
     private Collider2D col;
@@ -155,6 +156,7 @@ public class EnemyPatrol : MonoBehaviour, IDamageable
 
         if (dropPrefab != null) Instantiate(dropPrefab, transform.position, Quaternion.identity);
         onDeath.Invoke();
+        Died?.Invoke();
 
         Destroy(gameObject, 0.2f); // aquí puedes esperar a una animación de muerte
     }

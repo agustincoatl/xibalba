@@ -14,6 +14,10 @@ public class AbilityPickup : MonoBehaviour
 {
     [SerializeField] private Ability ability;
 
+    [Header("Mensaje")]
+    [Tooltip("Si se deja vacio se usa un mensaje segun la habilidad.")]
+    [SerializeField] private string pickupMessage = "";
+
     [Header("Efectos Visuales (Animación)")]
     [Tooltip("Velocidad de la animación de escalado")]
     [SerializeField] private float scaleSpeed = 3f;
@@ -58,6 +62,23 @@ public class AbilityPickup : MonoBehaviour
                 break;
         }
 
+        string message = string.IsNullOrWhiteSpace(pickupMessage)
+            ? GetDefaultMessage()
+            : pickupMessage;
+        MessageManager.Show(message);
+
         Destroy(gameObject);
+    }
+
+    private string GetDefaultMessage()
+    {
+        switch (ability)
+        {
+            case Ability.DobleSalto: return "Has desbloqueado el doble salto";
+            case Ability.Dash: return "Has desbloqueado el dash";
+            case Ability.SaltoPared: return "Has desbloqueado el salto de pared";
+            case Ability.ArmaLanzable: return "Has desbloqueado el arma lanzable";
+            default: return "Has desbloqueado una habilidad";
+        }
     }
 }

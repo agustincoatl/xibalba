@@ -75,6 +75,7 @@ public class Checkpoint : MonoBehaviour
 
     private void Activate(PlayerController player)
     {
+        bool firstActivation = !activated;
         activated = true;
 
         // Guardar posicion exacta del checkpoint (o del jugador, segun prefieras). Aqui usamos la del checkpoint.
@@ -95,6 +96,9 @@ public class Checkpoint : MonoBehaviour
             GameManager.Instance.SaveCheckpoint(savePosition, player);
 
         if (activeVisual != null) activeVisual.SetActive(true);
+
+        if (firstActivation)
+            MessageManager.Show("Checkpoint guardado");
 
         Debug.Log($"[Checkpoint] Guardado en escena '{UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}' pos={savePosition}");
     }
