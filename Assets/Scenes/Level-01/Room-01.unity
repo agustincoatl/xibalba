@@ -158,23 +158,24 @@ MonoBehaviour:
   detectRange: 7
   loseRange: 10
   chaseSpeed: 3.5
-  stopDistance: 0.8
+  stopDistance: 1.35
   stopAtEdges: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   edgeCheckDistance: 0.6
   wallCheckDistance: 0.15
-  attackRange: 1.3
-  attackVerticalTolerance: 1
+  attackRange: 2.2
+  attackVerticalTolerance: 2
   attackDamage: 1
   attackWindup: 0.35
   attackRecovery: 0.3
   attackCooldown: 1.2
-  attackOffset: {x: 0.9, y: 0}
-  attackRadius: 0.7
+  attackOffset: {x: 1.25, y: 1.75}
+  attackRadius: 0.9
   contactDamage: 1
-  dropPrefab: {fileID: 0}
+  jadeKeyPrefab: {fileID: 7412000001, guid: 9d85a25fe2bc449aa6526807b5200621, type: 3}
+  dropOffset: {x: 0, y: 0.5}
   onDeath:
     m_PersistentCalls:
       m_Calls: []
@@ -239,7 +240,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.0060691833, y: 1.7505722}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -249,7 +250,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.4960908, y: 3.501141}
   m_EdgeRadius: 0
 --- !u!212 &13022776
 SpriteRenderer:
@@ -320,7 +321,7 @@ Transform:
   m_GameObject: {fileID: 13022772}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -46.72, y: -88.38, z: 0}
+  m_LocalPosition: {x: -38, y: -99, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -762,6 +763,88 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageOnContact
   damage: 1
+--- !u!1001 &258106874
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 559315886428262015, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: doorId
+      value: Room-01/ExitDoor
+      objectReference: {fileID: 0}
+    - target: {fileID: 559315886428262015, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: openMessage
+      value: La puerta se ha abierto
+      objectReference: {fileID: 0}
+    - target: {fileID: 559315886428262015, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: blockingColliders.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 559315886428262015, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: 'blockingColliders.Array.data[0]'
+      value: 
+      objectReference: {fileID: 258106875}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -20.49
+      objectReference: {fileID: 0}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -97.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7204462546371299587, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7437343923681157556, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+      propertyPath: m_Name
+      value: PuertaJade
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+--- !u!61 &258106875 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 824584540229251806, guid: f45ba23b789955145bb319b27f7e845c, type: 3}
+  m_PrefabInstance: {fileID: 258106874}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &286939090
 GameObject:
   m_ObjectHideFlags: 0
@@ -1375,11 +1458,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3981fe4bc49071f4989a8b474dadcbc2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.49
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3981fe4bc49071f4989a8b474dadcbc2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.98
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3981fe4bc49071f4989a8b474dadcbc2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1586,7 +1669,7 @@ Transform:
   m_GameObject: {fileID: 1348121881}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.3, y: 8.6, z: 7.55}
+  m_LocalPosition: {x: 17.5, y: -0.58, z: 7.55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -122650,11 +122733,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   sfxSource: {fileID: 1913128463}
+  musicSource: {fileID: 0}
   salto: {fileID: 8300000, guid: 35328f278d2b7cb46a39d152e584ac06, type: 3}
   danio: {fileID: 8300000, guid: 8f60762bad771d7469e6c9c9823a4870, type: 3}
   muerte: {fileID: 8300000, guid: 82126e18e1877744ea99bdd6aadf0254, type: 3}
   cambioEscena: {fileID: 8300000, guid: 964dbc5faa9e439408b7007d83be4035, type: 3}
   ataque: {fileID: 8300000, guid: 693432a7dedf80b42b591088d4ebf959, type: 3}
+  musicaFondo: {fileID: 0}
+  volumenMusica: 0.5
 --- !u!82 &1913128463
 AudioSource:
   m_ObjectHideFlags: 0
@@ -123011,6 +123097,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoomExit
   targetScene: Room-00
   targetSpawnId: Room-00-1
+  requiredDoor: {fileID: 0}
+  requiredDoorId: Room-01/ExitDoor
+  lockedMessage: Necesitas la Llave de Jade para abrir esta puerta
+  messageCooldown: 2
 --- !u!61 &2068680702
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -123104,6 +123194,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityPickup
   ability: 1
+  pickupMessage: 
   scaleSpeed: 3
   scaleAmount: 0.15
   rotationSpeed: 45
@@ -123323,3 +123414,4 @@ SceneRoots:
   - {fileID: 680087083}
   - {fileID: 13022777}
   - {fileID: 1913128464}
+  - {fileID: 258106874}

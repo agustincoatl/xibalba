@@ -1,0 +1,352 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3978775338837533120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1166793413004204316}
+  - component: {fileID: 5783455678846565733}
+  - component: {fileID: 2717122838859152384}
+  - component: {fileID: 3637664347395318028}
+  - component: {fileID: 3637664347395318029}
+  m_Layer: 0
+  m_Name: Boss1Camazotz
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1166793413004204316
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3978775338837533120}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2656809376939466949}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!50 &5783455678846565733
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3978775338837533120}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!70 &2717122838859152384
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3978775338837533120}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 1.2, y: 1.9}
+  m_Direction: 0
+--- !u!114 &3637664347395318028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3978775338837533120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3c9e5f0a6b4723c0e8d9f1a2b3c4d5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CamazotzBoss
+  maxHealth: 12
+  phase2Threshold: 0.5
+  animator: {fileID: 8232244603657042623}
+  modelRoot: {fileID: 2656809376939466949}
+  modelFacesRightByDefault: 0
+  initialState: 0
+  battleActive: 0
+  arenaMinX: -61
+  arenaMaxX: -19
+  groundY: -99
+  ceilingY: -84.5
+  hoverY: -92
+  createRuntimeArenaTrigger: 1
+  entranceTriggerWidth: 4
+  idleDecisionTime: 1.25
+  attackCooldown: 0.65
+  phase2AttackCooldownMultiplier: 0.65
+  phase2DecisionTimeMultiplier: 0.65
+  returnSpeed: 7
+  sweepHeightAboveGround: 1.6
+  diveSpeed: 16
+  sweepSpeed: 9
+  bodyCollider: {fileID: 2717122838859152384}
+  flyingColliderSize: {x: 1.9, y: 1}
+  flyingColliderOffset: {x: 0, y: 0.15}
+  basicWindup: 0.22
+  basicDuration: 0.55
+  basicHitRadius: 1.5
+  basicDamage: 1
+  basicLungeDistance: 1.15
+  basicLungeSpeed: 7.5
+  groundShockwaveVisual:
+    prefab: {fileID: 0}
+    sprite: {fileID: 0}
+    material: {fileID: 0}
+    color: {r: 1, g: 0.52, b: 0.16, a: 1}
+    radius: 0.18
+    scale: 1
+    rotateToVelocity: 0
+    sortingOrder: 20
+  groundShockwaveSpeed: 5.5
+  groundShockwaveLifetime: 1.4
+  groundShockwaveDamage: 1
+  comboDuration: 1.25
+  comboHitTimes: {x: 0.28, y: 0.62, z: 0.96}
+  comboHitRadius: 1.6
+  comboDamage: 1
+  comboLungeDistance: 0.8
+  comboLungeSpeed: 6.5
+  sonicWaves: 5
+  sonicSpeed: 6.5
+  screamWindup: 0.7
+  screamDuration: 1.5
+  screamCenterSpeed: 7
+  sonicOriginPoint: {fileID: 0}
+  automaticSonicHeadInset: 0.82
+  sonicHeadHeightOffset: 0
+  screamSpawnArea:
+    enabled: 0
+    space: 1
+    rect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 10
+      height: 10
+    offset: {x: 0, y: 0}
+    clampToArena: 1
+  sonicOriginForwardOffset: 0.6
+  fangCount: 6
+  fangGravity: 2.6
+  spellWindup: 0.6
+  spellSpawnInterval: 0.09
+  spellDuration: 1.9
+  spellSpawnArea:
+    enabled: 0
+    space: 1
+    rect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 10
+      height: 10
+    offset: {x: 0, y: 0}
+    clampToArena: 1
+  fangEdgeInset: 0.6
+  diveRiseTime: 0.5
+  diveWarnTime: 0.55
+  diveStaggerTime: 1
+  sweepApproachSpeed: 14
+  sweepWarnTime: 0.28
+  diveHitRadius: 1.25
+  sweepHitRadius: 0.95
+  aerialDamage: 1
+  sweepStunTime: 0.85
+  sweepStunnedColor: {r: 0.4, g: 0.85, b: 1, a: 1}
+  maxDiveTilt: 60
+  diveTiltSpeed: 420
+  tiltRecoverySpeed: 240
+  specialAttackCooldown: 0
+  phase2SuperSonicDuration: 4
+  phase2SuperSonicInterval: 0.32
+  phase2SuperSonicWaves: 8
+  phase2SuperSonicSpread: 220
+  phase2CenterSpeed: 8
+  sonicWaveVisual:
+    prefab: {fileID: 0}
+    sprite: {fileID: 0}
+    material: {fileID: 0}
+    color: {r: 0.62, g: 0.22, b: 0.95, a: 1}
+    radius: 0.24
+    scale: 1
+    rotateToVelocity: 0
+    sortingOrder: 20
+  fangVisual:
+    prefab: {fileID: 0}
+    sprite: {fileID: 0}
+    material: {fileID: 0}
+    color: {r: 0.18, g: 0.12, b: 0.22, a: 1}
+    radius: 0.19
+    scale: 1
+    rotateToVelocity: 1
+    sortingOrder: 20
+  warningColor: {r: 1, g: 0.32, b: 0.2, a: 1}
+  warningLineMaterial: {fileID: 0}
+  sweepTelegraphColor: {r: 1, g: 0.55, b: 0.15, a: 0.9}
+  sweepTelegraphWidth: 0.22
+  sweepTelegraphMaterial: {fileID: 0}
+  sweepActiveColor: {r: 1, g: 0.15, b: 0.25, a: 0.55}
+  sweepActiveSprite: {fileID: 0}
+  sweepActiveMaterial: {fileID: 0}
+  sweepActiveSortingOrder: 21
+--- !u!114 &3637664347395318029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3978775338837533120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7b8c9d0e1f234567890abcdef123456, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossHealthUI
+  boss: {fileID: 3637664347395318028}
+  player: {fileID: 0}
+  encounterRange: 13
+  keepVisibleAfterEncounter: 1
+  fadeSpeed: 5
+  bossName: CAMAZOTZ
+  nameColor: {r: 1, g: 0.86, b: 0.65, a: 1}
+  nameFontSize: 24
+  customFont: {fileID: 0}
+  fillColor: {r: 0.78, g: 0.12, b: 0.22, a: 1}
+  enragedFillColor: {r: 1, g: 0.38, b: 0.12, a: 1}
+  backgroundColor: {r: 0.04, g: 0.02, b: 0.05, a: 0.85}
+  barSize: {x: 420, y: 18}
+  screenOffset: {x: 0, y: -70}
+  fillLerpSpeed: 8
+  root: {fileID: 0}
+  nameText: {fileID: 0}
+  fillImage: {fileID: 0}
+  canvasGroup: {fileID: 0}
+--- !u!1001 &2545760226818787118
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1166793413004204316}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_Name
+      value: Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: ce41822f3531f014e9ebf3e91b89f43e, type: 2}
+    - target: {fileID: 5866666021909216657, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+--- !u!4 &2656809376939466949 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+  m_PrefabInstance: {fileID: 2545760226818787118}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &8232244603657042623 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: a68f671aa1e0a9c429bf6e0ff86cd665, type: 3}
+  m_PrefabInstance: {fileID: 2545760226818787118}
+  m_PrefabAsset: {fileID: 0}

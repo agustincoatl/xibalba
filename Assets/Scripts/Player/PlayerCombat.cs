@@ -15,6 +15,9 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float attackCooldown = 0.35f;
     [SerializeField] private float attackHitDelay = 0.08f; // retraso hasta que "conecta" el golpe (sincroniza con la animaciÃ³n)
     [SerializeField] private LayerMask attackLayers;       // vacÃ­o = golpea cualquier capa
+    [Header("Feedback de ritmo de ataque")]
+    [SerializeField] private AttackRateVfx attackRateVfx;
+    [SerializeField] private Color attackPulseColor = new Color(0.25f, 0.85f, 1f, 1f);
 
     [Header("Arma lanzable")]
     public bool hasThrowable = true; // pon en false para desbloquearla con una mejora
@@ -31,6 +34,8 @@ public class PlayerCombat : MonoBehaviour
     private void Awake()
     {
         player = GetComponent<PlayerController>();
+        attackRateVfx = GetComponent<AttackRateVfx>();
+        if (attackRateVfx == null) attackRateVfx = gameObject.AddComponent<AttackRateVfx>();
         if (attackLayers.value == 0) attackLayers = ~0;
     }
 
@@ -59,8 +64,10 @@ public class PlayerCombat : MonoBehaviour
     private IEnumerator MeleeRoutine()
     {
         IsAttacking = true;
+        attackRateVfx?.PlayAttackPulse(transform.position, attackPulseColor, 0.9f);
         yield return new WaitForSeconds(attackHitDelay);
         DoMeleeHit();
+        attackRateVfx?.PlayAttackPulse(AttackPosition(), Color.white, 1.2f);
         yield return new WaitForSeconds(0.1f);
         IsAttacking = false;
     }
@@ -94,6 +101,7 @@ public class PlayerCombat : MonoBehaviour
         Vector3 pos = transform.position + new Vector3(throwOffset.x * dir, throwOffset.y, 0f);
         ThrowableWeapon projectile = Instantiate(throwablePrefab, pos, Quaternion.identity);
         projectile.Launch(new Vector2(dir, 0f), Team.Player);
+        attackRateVfx?.PlayAttackPulse(pos, attackPulseColor, 0.8f);
         AudioManager.PlayAtaque();
     }
 

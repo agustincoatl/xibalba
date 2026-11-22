@@ -127,6 +127,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7444482d98b48f98b6133de41d4ff7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickupItem
+  points: 1
+  showMessage: 1
+  pickupMessage: Has recogido una moneda
+  displayName: moneda
   pickupDelay: 0.25
   destroyOnPickup: 1
   onPickup:

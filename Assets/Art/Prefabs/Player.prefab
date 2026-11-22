@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &5513671501632442032
 GameObject:
@@ -249,7 +249,6 @@ MonoBehaviour:
   attackTrigger: Attack
   hurtTrigger: Hurt
   deadParameter: Dead
-
   idlePlayback: 1
   movePlayback: 1.5
   airPlayback: 0.75
@@ -286,4 +285,3 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5389908988493134162}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-

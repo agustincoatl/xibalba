@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -40,12 +41,16 @@ public class EnemyChaser : MonoBehaviour, IDamageable
     [SerializeField] private int contactDamage = 1;           // pon 0 si solo quieres que dañe con el ataque
 
     [Header("Al morir")]
-    [SerializeField] private GameObject dropPrefab;
+    [Tooltip("Llave de Jade que se instancia al morir. Cae por gravedad hasta el suelo.")]
+    [FormerlySerializedAs("dropPrefab")]
+    [SerializeField] private GameObject jadeKeyPrefab;
+    [SerializeField] private Vector2 dropOffset = new Vector2(0f, 0.5f);
     [SerializeField] private UnityEvent onDeath;
 
     public Team DamageTeam => Team.Enemy;
     public bool IsChasing => chasing;
     public bool IsAttacking => isAttacking;
+    public event System.Action Died;
 
     private Rigidbody2D rb;
     private Collider2D col;
@@ -267,8 +272,23 @@ public class EnemyChaser : MonoBehaviour, IDamageable
         col.enabled = false;
         rb.simulated = false;
 
-        if (dropPrefab != null) Instantiate(dropPrefab, transform.position, Quaternion.identity);
+        if (jadeKeyPrefab != null)
+        {
+            GameObject key = Instantiate(
+                jadeKeyPrefab,
+                transform.position + (Vector3)dropOffset,
+                Quaternion.identity);
+
+            // Nombre claro para depurar la jerarquia mientras se prueba el flujo.
+            key.name = "LlaveDeJade";
+        }
+        else
+        {
+            Debug.LogWarning(name + ": no hay prefab de Llave de Jade asignado.");
+        }
+
         onDeath.Invoke();
+        Died?.Invoke();
 
         Destroy(gameObject, 0.2f); // aquí puedes esperar a una animación de muerte
     }

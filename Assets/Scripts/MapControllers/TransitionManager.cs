@@ -15,7 +15,7 @@ public class TransitionManager : MonoBehaviour
     private string checkpointSpawn;
 
     private bool busy;
-    public Transform PlayerTransform => player.transform;
+    public Transform PlayerTransform => player != null ? player.transform : null;
 
     void Awake()
     {
@@ -23,8 +23,27 @@ public class TransitionManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);                        // debe ser un objeto raíz de la jerarquía
 
+        SceneManager.sceneLoaded += OnSceneLoaded;
         checkpointScene = SceneManager.GetActiveScene().name;
         checkpointSpawn = "Inicio";
+        RebindPlayer();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        RebindPlayer();
+    }
+
+    private void RebindPlayer()
+    {
+        if (player == null)
+            player = FindAnyObjectByType<PlayerController>(FindObjectsInactive.Include);
     }
 
     public void GoTo(string sceneName, string spawnId)
@@ -43,12 +62,19 @@ public class TransitionManager : MonoBehaviour
     public void Respawn()
     {
         if (busy) return;
+        RebindPlayer();
         StartCoroutine(TransitionRoutine(checkpointScene, checkpointSpawn, true));
     }
 
     private IEnumerator TransitionRoutine(string sceneName, string spawnId, bool restoreHealth)
     {
         busy = true;
+        RebindPlayer();
+        if (player == null)
+        {
+            busy = false;
+            yield break;
+        }
         var rb = player.GetComponent<Rigidbody2D>();
 
         player.enabled = false;               // sin control durante la transición
@@ -58,17 +84,55 @@ public class TransitionManager : MonoBehaviour
         yield return Fade(1f);
 
         yield return SceneManager.LoadSceneAsync(sceneName);
-
-        foreach (var sp in FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude))
+        RebindPlayer();
+        if (player == null)
         {
-            if (sp.id == spawnId)
-            {
-                player.transform.position = sp.transform.position;
-                break;
-            }
+            busy = false;
+            yield break;
         }
 
-        if (restoreHealth) player.currentHealth = player.maxHealth;
+        bool hasWorldCheckpoint = restoreHealth &&
+            GameManager.Instance != null &&
+            GameManager.Instance.HasCheckpoint &&
+            GameManager.Instance.CheckpointScene == sceneName;
+
+        if (hasWorldCheckpoint)
+        {
+            // El checkpoint fisico es la autoridad para un retry. No usar el
+            // spawn "Inicio", que puede pertenecer a otra sala o escena.
+            player.transform.position = GameManager.Instance.CheckpointPosition;
+        }
+        else
+        {
+            SpawnPoint chosen = null;
+            foreach (var sp in FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude))
+            {
+                if (sp.id == spawnId || sp.id == sceneName)
+                {
+                    chosen = sp;
+                    break;
+                }
+            }
+
+            // Fallback: si el id guardado no existe en esta escena, usar cualquier
+            // SpawnPoint para no dejar al jugador fuera del mapa.
+            if (chosen == null)
+            {
+                foreach (var sp in FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude))
+                {
+                    chosen = sp;
+                    break;
+                }
+            }
+
+            if (chosen != null)
+                player.transform.position = chosen.transform.position;
+        }
+
+        Physics2D.SyncTransforms();
+        player.ResetSafePosition();
+
+        if (restoreHealth) player.Revive(player.maxHealth, true);
 
         yield return null;                    // deja que la cámara se acomode
         rb.simulated = true;

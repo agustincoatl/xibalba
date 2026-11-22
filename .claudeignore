@@ -1,0 +1,121 @@
+# ============================================================
+#  .claudeignore — Xibalba (Unity 2D)
+#  Evita que Claude indexe archivos generados, temporales y
+#  binarios que no aportan contexto útil.
+#  Formato igual que .gitignore (glob patterns).
+# ============================================================
+
+# ── 1. CACHÉ Y ARCHIVOS TEMPORALES DE UNITY ─────────────────
+Library/
+Temp/
+Obj/
+Logs/
+MemoryCaptures/
+Recordings/
+UIElementsSchema/
+
+# ── 2. CONFIGURACIÓN LOCAL DE USUARIO (no relevante) ────────
+UserSettings/
+.vs/
+.vscode/
+.gradle/
+.consulo/
+
+# ── 3. ARCHIVOS GENERADOS POR EL IDE / BUILD SYSTEM ─────────
+*.csproj
+*.unityproj
+*.sln
+*.slnx
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+ExportedObj/
+
+# ── 4. BINARIOS Y BUILDS ─────────────────────────────────────
+Build/
+Builds/
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.exe
+*.dll
+*.so
+*.dylib
+
+# ── 5. ASSETS BINARIOS PESADOS ─────────────────────────────
+# Seguimos ignorando el binario pesado para no gastar tokens,
+# pero dejaremos visibles sus .meta más abajo.
+*.png
+*.jpg
+*.jpeg
+*.wav
+*.mp3
+*.ogg
+*.fbx
+*.obj
+*.blend
+*.blend1
+
+# ── 6. ARCHIVOS .meta DE ASSETS BINARIOS ────────────────────
+# Ignoramos texturas/audio, pero PERMITIMOS los .meta de modelos 3D
+# para que Claude obtenga sus GUIDs y nombres de clips de animación.
+*.png.meta
+*.jpg.meta
+*.wav.meta
+*.mp3.meta
+# *.fbx.meta   <-- DESCOMENTADO (Claude sí lo ve)
+# *.obj.meta   <-- DESCOMENTADO (Claude sí lo ve)
+
+# ── 7. TILES Y ASSETS GENERADOS (cientos de archivos) ───────
+Assets/Art/Tiles/
+Assets/TextMesh Pro/
+
+# ── 8. PAQUETES DE TERCEROS (PackageCache) ───────────────────
+# Miles de archivos de Unity Package Manager, no es código tuyo
+Library/PackageCache/
+
+# ── 9. ESCENAS Y PREFABS ────────────────────────────────────
+# Descomentamos escenas, prefabs y materiales para que Claude pueda
+# ensamblar tus modelos 3D en el proyecto.
+# *.unity
+# *.prefab
+# *.mat
+*.asset
+*.physicsMaterial2D
+*.inputactions
+*.scenetemplate
+*.asmdef
+*.asmref
+
+# ── 10. GITIGNORE Y CONTROL DE VERSIONES ────────────────────
+.git/
+*.log
+
+# ── 11. ARCHIVOS DE RECUPERACIÓN Y TEMPORALES PERSONALES ────
+Assets/_Recovery/
+Assets/Welcome/
+
+# ── 12. SHADER COMPILADOS ────────────────────────────────────
+*.shader       # los HLSL/ShaderLab son grandes y raramente necesarios
+ShaderVariants/
+
+# ── 13. ÍNDICES DE BÚSQUEDA ──────────────────────────────────
+UserSettings/Search.index
+UserSettings/Search.settings
+
+# ============================================================
+#  LO QUE SÍ SE INDEXA (no ignorado):
+#    Assets/Scripts/**/*.cs   ← todo el código del juego
+#    CONTEXT.md               ← documento de contexto
+#    .claudeignore            ← este archivo
+#    Packages/manifest.json   ← dependencias del proyecto
+# ============================================================

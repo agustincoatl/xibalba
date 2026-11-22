@@ -67,6 +67,26 @@ public class PlayerController : MonoBehaviour, IDamageable
     public bool IsInvulnerable => isInvulnerable;
     public bool IsTouchingWall => touchingWall;
 
+    // --- Llave de Jade ---
+    // El inventario es la fuente de verdad para que el estado sobreviva entre salas.
+    public bool HasJadeKey => KeyInventory.HasKey(KeyInventory.JadeKeyId);
+
+    public void CollectJadeKey(string keyId = KeyInventory.JadeKeyId)
+    {
+        if (string.IsNullOrWhiteSpace(keyId))
+            keyId = KeyInventory.JadeKeyId;
+
+        KeyInventory.AddKey(keyId);
+    }
+
+    public bool ConsumeJadeKey(string keyId = KeyInventory.JadeKeyId)
+    {
+        if (string.IsNullOrWhiteSpace(keyId))
+            keyId = KeyInventory.JadeKeyId;
+
+        return KeyInventory.RemoveKey(keyId);
+    }
+
     // --- Nuevas propiedades de movimiento y velocidad para el Animator / Scripts ---
     public bool IsWalking => isGrounded && Mathf.Abs(xAxis) > 0.05f && !isDashing;
     public bool IsJumping => !isGrounded && rb != null && rb.linearVelocity.y > 0.1f && !isWallSliding;
@@ -80,6 +100,19 @@ public class PlayerController : MonoBehaviour, IDamageable
     private Collider2D col;
     private SpriteRenderer spriteRenderer;
     private PlayerAnimation playerAnimation;
+
+    // Modelo 3D (base, con el Animator) y pivote de giro. El root nunca se
+    // refleja: el giro se hace en Visual, que es hijo del root.
+    private Transform visualRoot;
+
+    [Header("Visual 3D")]
+    [SerializeField] private Transform visualPivot;  // arrastra aquí el objeto Visual
+    [SerializeField] private float yawRight = 90f;
+    [SerializeField] private float yawLeft = -90f;
+
+    // Rotacion neutra del pivote (la del modelo importado). El yaw se aplica
+    // siempre SOBRE ella para no perder la orientacion original del FBX.
+    private Quaternion visualPivotNeutral = Quaternion.identity;
 
     // Entrada
     private float xAxis;
@@ -113,6 +146,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         col = GetComponent<Collider2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         playerAnimation = GetComponent<PlayerAnimation>();
+
+        Animator visualAnimator = GetComponentInChildren<Animator>(true);
+        visualRoot = visualAnimator != null ? visualAnimator.transform : null;
+
+        SetupVisualHierarchy();
+        ApplyFacingScale();
     }
 
     private void OnEnable()
@@ -122,8 +161,22 @@ public class PlayerController : MonoBehaviour, IDamageable
         isDead = false;
         isDashing = false;
         isInvulnerable = false;
+        isGrounded = false;
+        touchingWall = false;
+        isWallSliding = false;
+        xAxis = 0f;
+        jumpHeld = false;
+        dashPressed = false;
+        doubleJumpAvailable = true;
+        airDashAvailable = true;
+        dashDirection = FacingRight ? 1f : -1f;
+        coyoteCounter = 0f;
+        jumpBufferCounter = 0f;
+        dashTimer = 0f;
+        dashCooldownTimer = 0f;
         hitStunTimer = 0f;
         wallJumpLockTimer = 0f;
+        ApplyFacingScale();
         if (rb != null) rb.simulated = true;
         if (col != null) col.enabled = true;
         if (spriteRenderer != null) spriteRenderer.enabled = true;
@@ -144,13 +197,27 @@ public class PlayerController : MonoBehaviour, IDamageable
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            rb.gravityScale = defaultGravityScale;
         }
+        transform.rotation = Quaternion.identity;
+
+        // Reintento limpio: el modelo vuelve a su pose original y el jugador
+        // mira hacia delante. El mesh queda exactamente sobre el collider.
+        FacingRight = true;
+        RestoreVisualPose();
+        ApplyFacingScale();
+
         if (col != null) col.enabled = true;
         if (spriteRenderer != null) spriteRenderer.enabled = true;
 
         currentHealth = refillToMax ? maxHealth : Mathf.Clamp(health, 1, Mathf.Max(1, maxHealth));
 
         if (playerAnimation != null) playerAnimation.ResetAnimationState();
+
+        // Rebind del Animator puede reevaluar el pose del modelo: reafirmamos
+        // pose y facing para que el mesh siga pegado al collider.
+        RestoreVisualPose();
+        ApplyFacingScale();
 
         ResetSafePosition();
     }
@@ -373,9 +440,72 @@ public class PlayerController : MonoBehaviour, IDamageable
     private void SetFacing(bool right)
     {
         FacingRight = right;
+        ApplyFacingScale();
+    }
+
+    // Giro sobre el pivote Visual. El root mantiene siempre escala X positiva
+    // (salvo que no haya pivote asignado, en cuyo caso se usa el voltaje
+    // original como fallback). yawRight/yawLeft se aplican sobre la rotacion
+    // neutra del modelo importado para no perder su orientacion.
+    private void ApplyFacingScale()
+    {
         Vector3 s = transform.localScale;
-        s.x = Mathf.Abs(s.x) * (right ? 1f : -1f); // asume que el sprite original mira a la derecha
+        s.x = Mathf.Abs(s.x) * (visualPivot == null && !FacingRight ? -1f : 1f);
         transform.localScale = s;
+
+        if (visualPivot != null)
+            visualPivot.localRotation = visualPivotNeutral *
+                Quaternion.Euler(0f, FacingRight ? yawRight : yawLeft, 0f);
+    }
+
+    // Crea la jerarquia Player -> Visual -> base si no viene hecha en la escena.
+    // Mueve la transformacion del modelo al pivote (con escala positiva) y deja
+    // el base en (0,0,0), rotacion 0, escala 1. Asi no hay que editar escenas y
+    // la apariencia actual se conserva exactamente.
+    private void SetupVisualHierarchy()
+    {
+        if (visualRoot == null || visualRoot == transform)
+            return;
+
+        Animator anim = visualRoot.GetComponent<Animator>();
+        if (anim != null) anim.applyRootMotion = false;
+
+        if (visualPivot == null)
+        {
+            GameObject pivotGO = new GameObject("Visual");
+            pivotGO.transform.SetParent(transform, false);
+
+            Vector3 baseScale = visualRoot.localScale;
+            pivotGO.transform.localPosition = visualRoot.localPosition;
+            pivotGO.transform.localRotation = visualRoot.localRotation;
+            pivotGO.transform.localScale = new Vector3(
+                Mathf.Abs(baseScale.x), Mathf.Abs(baseScale.y), Mathf.Abs(baseScale.z));
+
+            visualPivotNeutral = pivotGO.transform.localRotation;
+
+            visualRoot.SetParent(pivotGO.transform, false);
+            visualRoot.localPosition = Vector3.zero;
+            visualRoot.localRotation = Quaternion.identity;
+            visualRoot.localScale = Vector3.one;
+
+            visualPivot = pivotGO.transform;
+        }
+        else
+        {
+            visualPivotNeutral = visualPivot.localRotation;
+        }
+    }
+
+    // Vuelve a dejar el modelo base en su pose fija, por si un clip o un Rebind
+    // del Animator llego a escribir su transform.
+    private void RestoreVisualPose()
+    {
+        if (visualRoot == null || visualRoot == transform)
+            return;
+
+        visualRoot.localPosition = Vector3.zero;
+        visualRoot.localRotation = Quaternion.identity;
+        visualRoot.localScale = Vector3.one;
     }
 
     // ---------------------------------------------------------------- DAÃ‘O Y MUERTE

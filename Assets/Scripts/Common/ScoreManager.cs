@@ -11,6 +11,15 @@ public class ScoreManager : MonoBehaviour
 
     public int Score { get; private set; }
 
+    public static int CurrentScore
+    {
+        get
+        {
+            if (Instance == null) Bootstrap();
+            return Instance != null ? Instance.Score : 0;
+        }
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Bootstrap()
     {
@@ -71,6 +80,15 @@ public class ScoreManager : MonoBehaviour
     {
         Score = 0;
         UpdateUI();
+    }
+
+    /// <summary>
+    /// Reinicia los puntos desde cualquier script (por ejemplo al reintentar).
+    /// </summary>
+    public static void ResetAll()
+    {
+        if (Instance == null) Bootstrap();
+        if (Instance != null) Instance.ResetScore();
     }
 
     public void SetScoreText(TMP_Text text)
