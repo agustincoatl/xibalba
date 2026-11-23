@@ -69,6 +69,9 @@ public class Checkpoint : MonoBehaviour
         playerInRange = true;
         playerRef = player;
 
+        PlayerHealing healing = player.GetComponent<PlayerHealing>();
+        if (healing != null) healing.OnRest();
+
         if (activateOnContact && (!saveOnlyOnce || !activated))
             Activate(player);
     }

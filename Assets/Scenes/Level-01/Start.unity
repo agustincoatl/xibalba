@@ -1971,6 +1971,7 @@ GameObject:
   - component: {fileID: 1046864391}
   - component: {fileID: 1046864389}
   - component: {fileID: 1046864396}
+  - component: {fileID: 1046864397}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2158,6 +2159,34 @@ MonoBehaviour:
   airPlayback: 0.75
   dashPlayback: 2
   playbackDamping: 0.12
+--- !u!114 &1046864397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1046864388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13d3bdd5b2450d0408ac2602c9a25a39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealing
+  maxEssence: 99
+  essencePerHit: 11
+  channelCost: 33
+  channelDuration: 1
+  channelHeal: 1
+  loseEssenceOnDeath: 1
+  maxOfferings: 1
+  offeringHeal: 1
+  offeringLockTime: 0.25
+  buildHud: 1
+  healingBool: Healing
+  essenceGainClip: {fileID: 0}
+  channelStartClip: {fileID: 0}
+  healClip: {fileID: 0}
+  offeringClip: {fileID: 0}
+  rechargeClip: {fileID: 0}
 --- !u!1 &1154742034
 GameObject:
   m_ObjectHideFlags: 0
@@ -121930,6 +121959,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoomExit
   targetScene: Battle-01
   targetSpawnId: Battle-01
+  requiredDoor: {fileID: 0}
+  requiredDoorId: 
+  lockedMessage: Necesitas la Llave de Jade para abrir esta puerta
+  messageCooldown: 2
 --- !u!61 &2068680702
 BoxCollider2D:
   m_ObjectHideFlags: 0

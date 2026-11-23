@@ -62,7 +62,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     public bool IsDashing => isDashing;
     public bool IsWallSliding => isWallSliding;
     public bool IsDead => isDead;
-    public bool CanAct => !isDead && !isDashing && hitStunTimer <= 0f;
+    public bool CanAct => !isDead && !isDashing && hitStunTimer <= 0f && !ControlLocked;
+    public bool ControlLocked { get; set; }   // lo usa PlayerHealing mientras canaliza
     public bool IsHurt => hitStunTimer > 0f;
     public bool IsInvulnerable => isInvulnerable;
     public bool IsTouchingWall => touchingWall;
@@ -220,6 +221,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         ApplyFacingScale();
 
         ResetSafePosition();
+
+        ControlLocked = false;
+        PlayerHealing healing = GetComponent<PlayerHealing>();
+        if (healing != null) healing.OnRespawn();
     }
 
     private void Start()
@@ -237,10 +242,13 @@ public class PlayerController : MonoBehaviour, IDamageable
         TickTimers();
         CheckGround();
         CheckWall();
-        HandleDash();
-        HandleJump();
+        if (!ControlLocked)
+        {
+            HandleDash();
+            HandleJump();
+            HandleFacing();
+        }
         HandleGravity();
-        HandleFacing();
         CheckFallLimit();
     }
 
@@ -259,6 +267,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (hitStunTimer > 0f)
         {
             hitStunTimer -= Time.fixedDeltaTime;
+            return;
+        }
+
+        if (ControlLocked)
+        {
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             return;
         }
 

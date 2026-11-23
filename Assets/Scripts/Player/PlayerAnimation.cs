@@ -82,7 +82,7 @@ public class PlayerAnimation : MonoBehaviour
         hasSpeed = hasWalking = hasGrounded = hasVerticalSpeed = false;
         hasDash = hasAttack = hasHurt = hasDead = false;
 
-        if (animator == null)
+        if (animator == null || animator.runtimeAnimatorController == null)
             return;
 
         speedHash = Animator.StringToHash(speedParameter);

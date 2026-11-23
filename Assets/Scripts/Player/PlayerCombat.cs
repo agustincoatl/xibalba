@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 // Ataque cuerpo a cuerpo y arma lanzable.
-// Controles: J = atacar | K = lanzar
+// Controles: J = atacar | K = lanzar | H = canalizar Ch'ulel | Q = ofrenda
 [RequireComponent(typeof(PlayerController))]
 public class PlayerCombat : MonoBehaviour
 {
@@ -28,12 +28,14 @@ public class PlayerCombat : MonoBehaviour
     public bool IsAttacking { get; private set; }
 
     private PlayerController player;
+    private PlayerHealing healing;
     private float attackTimer;
     private float throwTimer;
 
     private void Awake()
     {
         player = GetComponent<PlayerController>();
+        healing = GetComponent<PlayerHealing>();
         attackRateVfx = GetComponent<AttackRateVfx>();
         if (attackRateVfx == null) attackRateVfx = gameObject.AddComponent<AttackRateVfx>();
         if (attackLayers.value == 0) attackLayers = ~0;
@@ -86,6 +88,10 @@ public class PlayerCombat : MonoBehaviour
             if (!alreadyHit.Add(target)) continue;
 
             target.TakeDamage(attackDamage, transform.position);
+            // El bootstrap añade PlayerHealing justo después de los Awake de la escena,
+            // así que aquí lo rebuscamos por si Awake lo vio todavía nulo.
+            if (healing == null) healing = GetComponent<PlayerHealing>();
+            if (healing != null) healing.AddEssence();
         }
     }
 
