@@ -1,0 +1,72 @@
+﻿ M Assets/Art/Player/Animations/AnimatorPlayer.controller
+ M Assets/Art/Player/Animations/Attack.fbx.meta
+ M Assets/Art/Player/Animations/Idle.fbx.meta
+ M Assets/Art/Player/Animations/Jump.fbx.meta
+ M Assets/Art/Player/Animations/Run.fbx.meta
+ M Assets/Art/Player/Animations/base.fbx
+ M Assets/Art/Player/Animations/base.fbx.meta
+ D Assets/Art/Vampiro.meta
+ D Assets/Art/Vampiro/Animations.meta
+ D Assets/Art/Vampiro/Animations/base.fbx
+ D Assets/Art/Vampiro/Animations/base.fbx.meta
+ D Assets/Art/Vampiro/Animations/base_basic_pbr.fbx
+ D Assets/Art/Vampiro/Animations/base_basic_pbr.fbx.meta
+ D Assets/Art/Vampiro/Animations/base_basic_shaded.fbx
+ D Assets/Art/Vampiro/Animations/base_basic_shaded.fbx.meta
+ D Assets/Art/Vampiro/Textures.meta
+ D Assets/Art/Vampiro/Textures/Vampiro.mat
+ D Assets/Art/Vampiro/Textures/Vampiro.mat.meta
+ D Assets/Art/Vampiro/Textures/shaded.png
+ D Assets/Art/Vampiro/Textures/shaded.png.meta
+ D Assets/Art/Vampiro/Textures/texture_diffuse.png
+ D Assets/Art/Vampiro/Textures/texture_diffuse.png.meta
+ D Assets/Art/Vampiro/Textures/texture_metallic.png
+ D Assets/Art/Vampiro/Textures/texture_metallic.png.meta
+ D Assets/Art/Vampiro/Textures/texture_normal.png
+ D Assets/Art/Vampiro/Textures/texture_normal.png.meta
+ D Assets/Art/Vampiro/Textures/texture_pbr.png
+ D Assets/Art/Vampiro/Textures/texture_pbr.png.meta
+ D Assets/Art/Vampiro/Textures/texture_roughness.png
+ D Assets/Art/Vampiro/Textures/texture_roughness.png.meta
+ D "Assets/Art/Vampiro/wampiro con articulacion.fbx"
+ D "Assets/Art/Vampiro/wampiro con articulacion.fbx.meta"
+ D Assets/Audio/ataque.wav
+ D Assets/Audio/ataque.wav.meta
+ D Assets/Audio/cambio_escena.wav
+ D Assets/Audio/cambio_escena.wav.meta
+ D Assets/Audio/danio.wav
+ D Assets/Audio/danio.wav.meta
+ D Assets/Audio/muerte.wav
+ D Assets/Audio/muerte.wav.meta
+ D Assets/Audio/salto.wav
+ D Assets/Audio/salto.wav.meta
+ M Assets/Scenes/Level-01/Battle-01.unity
+ M Assets/Scenes/Level-01/Room-00.unity
+ M Assets/Scenes/Level-01/Start.unity
+ M Assets/Scripts/Common/GameManager.cs
+ M Assets/Scripts/MapControllers/TransitionManager.cs
+ M Assets/Scripts/Player/PlayerCombat.cs
+ M Assets/Scripts/Player/PlayerController.cs
+ M Packages/manifest.json
+ M Packages/packages-lock.json
+?? Assets/Art/Boss1Camazotz.meta
+?? Assets/Art/Boss1Camazotz/
+?? Assets/Art/Boss2Xibalba.meta
+?? Assets/Art/Player/Animations/Dead.fbx
+?? Assets/Art/Player/Animations/Dead.fbx.meta
+?? Assets/Art/Player/Animations/Trhow.fbx
+?? Assets/Art/Player/Animations/Trhow.fbx.meta
+?? Assets/Art/Prefabs/Boss1Camazotz.prefab
+?? Assets/Art/Prefabs/Boss1Camazotz.prefab.meta
+?? Assets/Editor/CamazotzAnimatorSetup.cs
+?? Assets/Editor/CamazotzAnimatorSetup.cs.meta
+?? Assets/Editor/CamazotzSetup.cs
+?? Assets/Editor/CamazotzSetup.cs.meta
+?? "Assets/Scenes/Level-01/Start 1.unity"
+?? "Assets/Scenes/Level-01/Start 1.unity.meta"
+?? Assets/Scripts/Bosses.meta
+?? Assets/Scripts/Bosses/
+?? Assets/Scripts/scripts.zip
+?? Assets/Scripts/scripts.zip.meta
+?? BACKUP_antes_VisualPivot_2026-11-21/
+?? CLAUDE.md

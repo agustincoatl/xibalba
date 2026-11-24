@@ -1,0 +1,23 @@
+PUNTO DE RESTAURACION - antes del cambio a VisualPivot (2026-11-21)
+
+Para volver atras, copia estos archivos desde esta carpeta a la misma ruta en el proyecto:
+
+  Assets/Scripts/Player/PlayerController.cs
+  Assets/Scripts/Common/GameManager.cs
+  Assets/Scripts/MapControllers/TransitionManager.cs
+  Assets/Art/Player/Animations/Idle.fbx.meta
+  Assets/Art/Player/Animations/Run.fbx.meta
+  Assets/Art/Player/Animations/Jump.fbx.meta
+  Assets/Art/Player/Animations/Attack.fbx.meta
+  Assets/Art/Player/Animations/Dead.fbx.meta
+  Assets/Art/Player/Animations/Trhow.fbx.meta
+
+Y elimina los archivos nuevos:
+
+  Assets/Scripts/Player/PlayerVisualAnchor.cs (+ .meta)
+  Assets/Editor/PlayerAnimationBakeFix.cs (+ .meta)
+
+Tambien estan incluidos git_status.txt y diff_antes.patch con el estado
+exacto del repositorio justo antes de aplicar los cambios.
+
+No se hicieron commits ni pushes.
