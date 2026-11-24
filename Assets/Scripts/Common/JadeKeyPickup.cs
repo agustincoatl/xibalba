@@ -207,7 +207,9 @@ public class JadeKeyPickup : MonoBehaviour
                hit.transform != transform &&
                !hit.transform.IsChildOf(transform) &&
                hit.GetComponentInParent<PlayerController>() == null &&
-               hit.GetComponentInParent<EnemyChaser>() == null;
+               hit.GetComponentInParent<EnemyChaser>() == null &&
+               hit.GetComponentInParent<BasicEnemy>() == null &&
+               hit.GetComponentInParent<EnemyPatrol>() == null;
     }
 
     private bool IsValidGround(Collider hit)
@@ -217,7 +219,9 @@ public class JadeKeyPickup : MonoBehaviour
                hit.transform != transform &&
                !hit.transform.IsChildOf(transform) &&
                hit.GetComponentInParent<PlayerController>() == null &&
-               hit.GetComponentInParent<EnemyChaser>() == null;
+               hit.GetComponentInParent<EnemyChaser>() == null &&
+               hit.GetComponentInParent<BasicEnemy>() == null &&
+               hit.GetComponentInParent<EnemyPatrol>() == null;
     }
 
     private void Land(Vector3 position)

@@ -1,7 +1,4 @@
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 using System.Collections.Generic;
 
 /// <summary>Espacio de coordenadas de un area configurable de ataque.</summary>
@@ -1372,16 +1369,21 @@ public class CamazotzBoss : BossController
     }
 
     private void DrawAttackArea(BossAttackArea area, Rect fallback, float inset,
-                                Color color, string label)
+                                Color color)
     {
         Rect r = ResolveArea(area, fallback, inset);
         Gizmos.color = color;
         Gizmos.DrawWireCube(new Vector3(r.center.x, r.center.y, arenaZ),
                             new Vector3(r.width, r.height, 0.05f));
-#if UNITY_EDITOR
-        Handles.Label(new Vector3(r.xMin, r.yMax, arenaZ),
-                      label + (area.enabled ? "" : " (off)"));
-#endif
+        // Antes se dibujaba una etiqueta con Handles.Label aqui. Eso no es
+        // valido desde OnDrawGizmosSelected: Handles pertenece al GUIView de
+        // la Scene view (OnSceneGUI de un Editor) y Unity registraba
+        // "Screen position out of view frustum" al proyectar la esquina.
+        // El color del area ya identifica el ataque; este marcador senala la
+        // esquina superior izquierda y se atenua cuando el area esta off.
+        Gizmos.color = area.enabled ? color : new Color(color.r, color.g, color.b, 0.2f);
+        Vector3 corner = new Vector3(r.xMin, r.yMax, arenaZ);
+        Gizmos.DrawWireCube(corner, Vector3.one * 0.16f);
     }
 
     private void OnDrawGizmosSelected()
@@ -1409,9 +1411,9 @@ public class CamazotzBoss : BossController
 
         // Areas configurables de spawn (se ven aunque el ataque no este activo).
         DrawAttackArea(screamSpawnArea, ScreamFallbackArea(), 0f,
-                       new Color(0.65f, 0.35f, 1f, 0.9f), "Scream spawn");
+                       new Color(0.65f, 0.35f, 1f, 0.9f));
         DrawAttackArea(spellSpawnArea, SpellFallbackArea(), fangEdgeInset,
-                       new Color(0.95f, 0.55f, 0.1f, 0.9f), "Spell spawn");
+                       new Color(0.95f, 0.55f, 0.1f, 0.9f));
 
         // Ruta y area activa del Sweep mientras se esta ejecutando en Play Mode.
         if (Application.isPlaying && currentState == BossState.Sweep)

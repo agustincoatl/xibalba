@@ -1,9 +1,10 @@
 using UnityEngine;
 
 /// <summary>
-/// Zona de salida de la sala. Si hay una LockedDoor asociada, no permite
-/// cambiar de escena hasta que la puerta este abierta. Solo responde al jugador.
-/// Acepta triggers 2D y 3D.
+/// Zona de salida de la sala. Por defecto es SOLO una transicion de escena:
+/// no pide llave ni bloquea el paso. Para exigir una puerta hay que asignar
+/// requiredDoor / requiredDoorId, o marcar requireDoor para detectar la unica
+/// LockedDoor de la escena. Solo responde al jugador. Acepta triggers 2D y 3D.
 /// </summary>
 public class RoomExit : MonoBehaviour
 {
@@ -11,7 +12,9 @@ public class RoomExit : MonoBehaviour
     [SerializeField] private string targetSpawnId;
 
     [Header("Puerta requerida (opcional)")]
-    [Tooltip("Si se deja vacio, se busca la unica LockedDoor de la escena.")]
+    [Tooltip("Desactivalo para que la salida sea solo una transicion: no pedira llave aunque exista una LockedDoor en la escena. Marcalo para buscar automaticamente la unica LockedDoor.")]
+    [SerializeField] private bool requireDoor;
+    [Tooltip("Puerta concreta que debe estar abierta (opcional).")]
     [SerializeField] private LockedDoor requiredDoor;
     [Tooltip("Identificador de la puerta a buscar si no se asigna requiredDoor.")]
     [SerializeField] private string requiredDoorId = "";
@@ -84,8 +87,21 @@ public class RoomExit : MonoBehaviour
         TransitionManager.Instance.GoTo(targetScene, targetSpawnId);
     }
 
+    private bool RequiresDoor()
+    {
+        // Un ID o una puerta asignada implican que esta salida esta cerrada,
+        // aunque requireDoor este desmarcado (escenas antiguas). Si los tres
+        // campos estan vacios, la salida es una transicion libre.
+        return requireDoor || requiredDoor != null ||
+               !string.IsNullOrWhiteSpace(requiredDoorId);
+    }
+
     private LockedDoor ResolveDoor()
     {
+        // Con los dos campos de puerta vacios no se busca nada: asi una
+        // LockedDoor suelta en la escena nunca bloquea esta salida.
+        if (!RequiresDoor()) return null;
+
         if (resolvedDoor != null) return resolvedDoor;
         if (requiredDoor != null)
         {
@@ -110,9 +126,10 @@ public class RoomExit : MonoBehaviour
                 }
             }
         }
-        else if (doors.Length == 1)
+        else if (requireDoor && doors.Length == 1)
         {
-            // En Room-01 solo hay una puerta, asi que no hace falta asignarla a mano.
+            // Detecion automatica opt-in: solo se busca la unica puerta cuando
+            // el disenador marca Require Door explicitamente.
             resolvedDoor = doors[0];
         }
 

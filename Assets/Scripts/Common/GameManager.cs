@@ -18,6 +18,9 @@ public class GameManager : MonoBehaviour
     [Header("Escena de menu")]
     [SerializeField] private string mainMenuSceneName = "Menu";
 
+    [Header("Nueva partida")]
+    [SerializeField] private string firstGameplaySceneName = "Start";
+
     // Datos del ultimo checkpoint fisico registrado
     public bool HasCheckpoint { get; private set; }
     public string CheckpointScene { get; private set; }
@@ -30,7 +33,12 @@ public class GameManager : MonoBehaviour
     // UI de victoria generada en runtime
     private bool victoryShown;
     private GameObject victoryCanvas;
+    private GameObject victoryFinalRoot;
+    private Text victoryContextLabel;
     private Text victoryScoreLabel;
+    private Coroutine victoryRoutine;
+
+    private const float VictoryRevealDelay = 10f;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Bootstrap()
@@ -96,7 +104,9 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Muestra la pantalla de victoria y congela el juego.
+    /// Programa la pantalla de victoria despues de la muerte del jefe.
+    /// La escena sigue corriendo durante el retraso para dejar terminar la
+    /// animacion y el desvanecimiento del jefe.
     /// La llama VictoryOnDeath cuando muere el jefe 2, o cualquier script que termine la partida.
     /// </summary>
     public void Victory()
@@ -104,16 +114,19 @@ public class GameManager : MonoBehaviour
         if (victoryShown) return;
 
         victoryShown = true;
-        Time.timeScale = 0f;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
         EnsureVictoryUI();
+        // La escena sigue corriendo durante la muerte del jefe: no mostramos
+        // todavía el panel ni cambiamos Time.timeScale.
         if (victoryCanvas != null)
-            victoryCanvas.SetActive(true);
+            victoryCanvas.SetActive(false);
+        if (victoryFinalRoot != null)
+            victoryFinalRoot.SetActive(false);
+        if (victoryContextLabel != null)
+            victoryContextLabel.gameObject.SetActive(false);
 
-        if (victoryScoreLabel != null)
-            victoryScoreLabel.text = string.Format("Puntuacion final: {0}", ScoreManager.CurrentScore);
+        if (victoryRoutine != null)
+            StopCoroutine(victoryRoutine);
+        victoryRoutine = StartCoroutine(RevealVictoryRoutine());
     }
 
     /// <summary>
@@ -132,6 +145,64 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         StartCoroutine(ExitRoutine());
+    }
+
+    /// <summary>
+    /// Reinicia la partida completa desde la primera escena jugable.
+    /// </summary>
+    public void ReplayFromBeginning()
+    {
+        if (victoryRoutine != null)
+        {
+            StopCoroutine(victoryRoutine);
+            victoryRoutine = null;
+        }
+        Time.timeScale = 1f;
+        HideVictory();
+        ResetRunProgress(true);
+
+        // El TransitionManager conserva estado entre escenas; se recrea en
+        // Start para evitar arrastrar el checkpoint o spawn de la partida anterior.
+        if (TransitionManager.Instance != null)
+            Destroy(TransitionManager.Instance.gameObject);
+
+        StartCoroutine(ReplayRoutine());
+    }
+
+    private IEnumerator RevealVictoryRoutine()
+    {
+        yield return new WaitForSecondsRealtime(VictoryRevealDelay);
+
+        if (!victoryShown)
+        {
+            victoryRoutine = null;
+            yield break;
+        }
+
+        if (victoryCanvas != null)
+            victoryCanvas.SetActive(true);
+        if (victoryContextLabel != null)
+        {
+            victoryContextLabel.text = "¡Xibalba ha caído! Has ganado.";
+            victoryContextLabel.gameObject.SetActive(true);
+        }
+        if (victoryFinalRoot != null)
+            victoryFinalRoot.SetActive(true);
+        if (victoryScoreLabel != null)
+            victoryScoreLabel.text = string.Format("Puntuacion final: {0}", ScoreManager.CurrentScore);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        victoryRoutine = null;
+    }
+
+    private IEnumerator ReplayRoutine()
+    {
+        AsyncOperation op = SceneManager.LoadSceneAsync(firstGameplaySceneName);
+        while (!op.isDone) yield return null;
+        yield return null;
+        Time.timeScale = 1f;
     }
 
     private IEnumerator RetryRoutine()
@@ -294,8 +365,19 @@ public class GameManager : MonoBehaviour
 
     private void HideVictory()
     {
+        if (victoryRoutine != null)
+        {
+            StopCoroutine(victoryRoutine);
+            victoryRoutine = null;
+        }
+
         if (victoryCanvas != null)
             victoryCanvas.SetActive(false);
+
+        if (victoryContextLabel != null)
+            victoryContextLabel.gameObject.SetActive(false);
+        if (victoryFinalRoot != null)
+            victoryFinalRoot.SetActive(false);
 
         victoryShown = false;
     }
@@ -330,19 +412,41 @@ public class GameManager : MonoBehaviour
         Image background = panel.AddComponent<Image>();
         background.color = new Color(0f, 0f, 0f, 0.82f);
 
-        CreateVictoryText(panel.transform, "VictoryTitle", "VICTORIA", 72,
-            new Vector2(0f, 170f), new Color(0.95f, 0.82f, 0.35f));
+        victoryContextLabel = CreateVictoryText(panel.transform, "VictoryContext",
+            "¡Xibalba ha caído! Has ganado.", 42,
+            new Vector2(0f, 100f), new Color(0.95f, 0.82f, 0.35f));
 
-        victoryScoreLabel = CreateVictoryText(panel.transform, "VictoryScore", "Puntuacion final: 0", 40,
-            new Vector2(0f, 60f), Color.white);
+        victoryFinalRoot = new GameObject("VictoryFinalPanel");
+        victoryFinalRoot.transform.SetParent(panel.transform, false);
+        RectTransform finalRect = victoryFinalRoot.AddComponent<RectTransform>();
+        finalRect.anchorMin = Vector2.zero;
+        finalRect.anchorMax = Vector2.one;
+        finalRect.offsetMin = Vector2.zero;
+        finalRect.offsetMax = Vector2.zero;
 
-        CreateVictoryButton(panel.transform, "VictoryMenuButton", "Volver al menu",
-            new Vector2(0f, -80f), OnVictoryMenuPressed);
+        CreateVictoryText(victoryFinalRoot.transform, "VictoryTitle", "VICTORIA", 72,
+            new Vector2(0f, 220f), new Color(0.95f, 0.82f, 0.35f));
 
+        victoryScoreLabel = CreateVictoryText(victoryFinalRoot.transform, "VictoryScore", "Puntuacion final: 0", 40,
+            new Vector2(0f, 35f), Color.white);
+
+        CreateVictoryButton(victoryFinalRoot.transform, "VictoryReplayButton", "Volver a jugar",
+            new Vector2(0f, -55f), OnVictoryReplayPressed);
+
+        CreateVictoryButton(victoryFinalRoot.transform, "VictoryExitButton", "Salir",
+            new Vector2(0f, -140f), OnVictoryExitPressed);
+
+        victoryContextLabel.gameObject.SetActive(false);
+        victoryFinalRoot.SetActive(false);
         victoryCanvas.SetActive(false);
     }
 
-    private void OnVictoryMenuPressed()
+    private void OnVictoryReplayPressed()
+    {
+        ReplayFromBeginning();
+    }
+
+    private void OnVictoryExitPressed()
     {
         HideVictory();
         ExitToMainMenu();

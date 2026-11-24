@@ -1,12 +1,17 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Tilemaps;
 using System.Collections;
+using System.Collections.Generic;
 
 // Movimiento + vida del jugador.
 // Controles: A/D o flechas = mover | Espacio = saltar | Shift izquierdo = dash
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour, IDamageable
 {
+    private const string DamageTileTag = "Hazard";
+    private const string DamageTileName = "Damged";
+
     [Header("Habilidades (se desbloquean con mejoras)")]
     public bool hasDoubleJump = true; // pon en false cuando ya tengas las recompensas del juego
     public bool hasDash = true;
@@ -52,8 +57,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
-    [Header("CaÃ­da al vacÃ­o")]
-    [SerializeField] private float fallLimitY = -30f; // ajusta segÃºn la sala
+    [Header("Tiles que danan")]
+    [SerializeField] private float damageContactSkin = 0.05f; // margen para detectar el tile tambien al caminar
 
     // --- Lo que otros scripts pueden consultar (animaciones, combate, etc.) ---
     public Team DamageTeam => Team.Player;
@@ -140,6 +145,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     private float dashCooldownTimer;
 
     private Vector3 lastSafePosition;
+    private readonly Collider2D[] damageOverlapResults = new Collider2D[16];
+    private Tilemap[] hazardTilemaps = new Tilemap[0];
 
     private void Awake()
     {
@@ -153,6 +160,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         SetupVisualHierarchy();
         ApplyFacingScale();
+        CacheHazardTilemaps();
     }
 
     private void OnEnable()
@@ -249,12 +257,13 @@ public class PlayerController : MonoBehaviour, IDamageable
             HandleFacing();
         }
         HandleGravity();
-        CheckFallLimit();
     }
 
     private void FixedUpdate()
     {
         if (isDead) return;
+
+        CheckDamageTiles();
 
         // Durante el dash la velocidad la manda el dash
         if (isDashing)
@@ -330,12 +339,115 @@ public class PlayerController : MonoBehaviour, IDamageable
             coyoteCounter = coyoteTime;
             doubleJumpAvailable = true;
             airDashAvailable = true;
-            lastSafePosition = transform.position;
+
+            // No guardamos como seguro un punto que este sobre un tile de dano.
+            if (!IsOverlappingDamageTile())
+                lastSafePosition = transform.position;
         }
         else
         {
             coyoteCounter -= Time.deltaTime;
         }
+    }
+
+    // ---------------------------------------------------------------- TILES QUE DANAN
+
+    private bool IsDamageTile(Collider2D other)
+    {
+        if (other == null) return false;
+
+        Transform current = other.transform;
+        while (current != null)
+        {
+            GameObject go = current.gameObject;
+            if (go.CompareTag(DamageTileTag)) return true;
+            if (string.Equals(go.name, DamageTileName, System.StringComparison.OrdinalIgnoreCase)) return true;
+            if (go.GetComponent<DamageOnContact>() != null) return true;
+
+            current = current.parent;
+        }
+
+        return false;
+    }
+
+    private void CacheHazardTilemaps()
+    {
+        List<Tilemap> maps = new List<Tilemap>();
+        foreach (Tilemap map in FindObjectsByType<Tilemap>(FindObjectsInactive.Include))
+        {
+            GameObject go = map.gameObject;
+            if (go.CompareTag(DamageTileTag) ||
+                string.Equals(go.name, DamageTileName, System.StringComparison.OrdinalIgnoreCase) ||
+                go.GetComponent<DamageOnContact>() != null)
+                maps.Add(map);
+        }
+        hazardTilemaps = maps.ToArray();
+    }
+
+    private bool OverlapsHazardCells(Tilemap map, Bounds bounds)
+    {
+        if (map == null || !map.gameObject.activeInHierarchy) return false;
+
+        Vector3Int min = map.WorldToCell(bounds.min);
+        Vector3Int max = map.WorldToCell(bounds.max);
+
+        for (int x = min.x; x <= max.x; x++)
+        {
+            for (int y = min.y; y <= max.y; y++)
+            {
+                if (map.HasTile(new Vector3Int(x, y, min.z))) return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsOverlappingDamageTile()
+    {
+        if (col == null || !col.enabled) return false;
+
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.useTriggers = true;
+        filter.useLayerMask = false;
+
+        Bounds bounds = col.bounds;
+        bounds.Expand(damageContactSkin * 2f);
+        int count = Physics2D.OverlapBox(bounds.center, bounds.size, 0f, filter, damageOverlapResults);
+        for (int i = 0; i < count; i++)
+        {
+            if (damageOverlapResults[i] == col) continue;
+            if (IsDamageTile(damageOverlapResults[i])) return true;
+        }
+
+        // Muchos tiles de dano no tienen ColliderType (no generan formas). Mirar
+        // las celdas pintadas permite detectarlos igualmente al caminar.
+        for (int i = 0; i < hazardTilemaps.Length; i++)
+        {
+            if (OverlapsHazardCells(hazardTilemaps[i], bounds)) return true;
+        }
+
+        return false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision) => TryHitDamageTile(collision.collider);
+    private void OnCollisionStay2D(Collision2D collision) => TryHitDamageTile(collision.collider);
+    private void OnTriggerEnter2D(Collider2D other) => TryHitDamageTile(other);
+    private void OnTriggerStay2D(Collider2D other) => TryHitDamageTile(other);
+
+    private void TryHitDamageTile(Collider2D other)
+    {
+        if (isDead || isInvulnerable || !IsDamageTile(other)) return;
+        TakeTileDamage();
+    }
+
+    // Los callbacks de colision no siempre avisan al caminar contra un tilemap
+    // (por ejemplo si el collider es solido o esta compuesto). Comprobar la
+    // superposicion en cada paso fisico cubre ese caso.
+    private void CheckDamageTiles()
+    {
+        if (isInvulnerable || col == null || !col.enabled) return;
+        if (!IsOverlappingDamageTile()) return;
+        TakeTileDamage();
     }
 
     private void CheckWall()
@@ -544,6 +656,63 @@ public class PlayerController : MonoBehaviour, IDamageable
         ApplyKnockback(sourcePosition);
     }
 
+    // Dano de los tiles "Damged"/Hazard: siempre quita 1 punto y devuelve al
+    // ultimo punto seguro, sin knockback para no volver a caer en el tile.
+    public void TakeTileDamage()
+    {
+        if (isDead || isInvulnerable) return;
+        if (isDashing && invulnerableWhileDashing) return;
+
+        isInvulnerable = true;
+
+        Vector3 safePosition = lastSafePosition;
+
+        isDashing = false;
+        isWallSliding = false;
+        dashTimer = 0f;
+        jumpBufferCounter = 0f;
+        hitStunTimer = Mathf.Min(hitStunDuration, 0.12f);
+
+        currentHealth = Mathf.Max(currentHealth - 1, 0);
+
+        if (currentHealth <= 0)
+        {
+            AudioManager.PlayMuerte();
+            StopAllCoroutines();
+            StartCoroutine(DieRoutine());
+            return;
+        }
+
+        AudioManager.PlayDanio();
+        StartCoroutine(TileDamageTransitionRoutine(safePosition));
+    }
+
+    // Reaparecemos con el mismo fade que usa el cambio de sala: pantalla negra,
+    // teleport al punto seguro y pantalla visible otra vez.
+    private IEnumerator TileDamageTransitionRoutine(Vector3 safePosition)
+    {
+        TransitionManager transition = TransitionManager.Instance;
+        if (transition != null)
+            yield return transition.FadeTeleport(this, safePosition);
+        else
+            TeleportTo(safePosition);
+
+        StartCoroutine(InvulnerabilityRoutine());
+    }
+
+    // Lo usa el TransitionManager para recolocar al jugador mientras la pantalla esta negra.
+    public void TeleportTo(Vector3 position)
+    {
+        if (rb != null)
+        {
+            rb.position = position;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+        transform.position = position;
+        Physics2D.SyncTransforms();
+    }
+
     private IEnumerator InvulnerabilityRoutine()
     {
         isInvulnerable = true;
@@ -621,15 +790,6 @@ public class PlayerController : MonoBehaviour, IDamageable
                 UnityEngine.SceneManagement.SceneManager.LoadScene(
                     UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
         }
-    }
-
-    // ---------------------------------------------------------------- CAÃDA AL VACÃO
-
-    private void CheckFallLimit()
-    {
-        if (transform.position.y >= fallLimitY) return;
-        transform.position = lastSafePosition;
-        rb.linearVelocity = Vector2.zero;
     }
 
     // TransitionManager lo llama al colocar al jugador en un spawn

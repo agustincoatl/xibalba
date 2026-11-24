@@ -166,9 +166,6 @@ MonoBehaviour:
   screamWindup: 0.7
   screamDuration: 1.5
   screamCenterSpeed: 7
-  sonicOriginPoint: {fileID: 0}
-  automaticSonicHeadInset: 0.82
-  sonicHeadHeightOffset: 0
   screamSpawnArea:
     enabled: 0
     space: 1
@@ -198,6 +195,9 @@ MonoBehaviour:
     offset: {x: 0, y: 0}
     clampToArena: 1
   fangEdgeInset: 0.6
+  sonicOriginPoint: {fileID: 0}
+  automaticSonicHeadInset: 0.82
+  sonicHeadHeightOffset: 0
   diveRiseTime: 0.5
   diveWarnTime: 0.55
   diveStaggerTime: 1

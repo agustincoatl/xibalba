@@ -42,7 +42,28 @@ public enum BossState
     Sweep,
 
     /// <summary>Derrotado.</summary>
-    Dead
+    Dead,
+
+    // ---------------------------------------------------------------- XIBALBA
+    // Se agregan al final para no cambiar el valor serializado de los estados
+    // existentes de Camazotz.
+    /// <summary>Entrada: arrodillado -> se alza (Start_Battle).</summary>
+    StartBattle,
+
+    /// <summary>Golpe melee alternativo A (BasicAttackA).</summary>
+    BasicAttackA,
+
+    /// <summary>Golpe melee alternativo B (BasicAttackB).</summary>
+    BasicAttackB,
+
+    /// <summary>Canalizacion de orbes con trayectoria fijada (Cast).</summary>
+    Cast,
+
+    /// <summary>Salto con onda sismica al aterrizar (JumpAttack).</summary>
+    JumpAttack,
+
+    /// <summary>Pinchos de obsidiana con aviso (ObsidianAttack).</summary>
+    ObsidianAttack
 }
 
 /// <summary>
@@ -412,7 +433,7 @@ public abstract class BossController : MonoBehaviour, IDamageable
     /// activa: se quedan colgados y pueden disparar un ataque al volver a
     /// Idle. Se limpian en cada cambio de estado (Die se conserva).
     /// </summary>
-    protected void ClearAttackTriggers()
+    protected virtual void ClearAttackTriggers()
     {
         if (animator == null) return;
         animator.ResetTrigger(AnimBasicAttack);

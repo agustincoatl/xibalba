@@ -66,6 +66,46 @@ public class TransitionManager : MonoBehaviour
         StartCoroutine(TransitionRoutine(checkpointScene, checkpointSpawn, true));
     }
 
+    // Reutiliza el fade de cambio de sala para un teleport dentro de la misma
+    // escena (tile de dano que devuelve al jugador a su punto seguro).
+    public IEnumerator FadeTeleport(PlayerController target, Vector3 destination)
+    {
+        if (target == null) yield break;
+
+        if (busy || fadeGroup == null)
+        {
+            target.TeleportTo(destination);
+            yield break;
+        }
+
+        busy = true;
+        Rigidbody2D rb = target.GetComponent<Rigidbody2D>();
+        bool previousLock = target.ControlLocked;
+        bool previousSimulated = rb != null && rb.simulated;
+
+        target.ControlLocked = true;
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.simulated = false;
+        }
+
+        yield return Fade(1f);
+
+        target.TeleportTo(destination);
+        Physics2D.SyncTransforms();
+        target.ResetSafePosition();
+
+        yield return null;
+
+        if (rb != null) rb.simulated = previousSimulated;
+        yield return Fade(0f);
+
+        target.ControlLocked = previousLock;
+        busy = false;
+    }
+
     private IEnumerator TransitionRoutine(string sceneName, string spawnId, bool restoreHealth)
     {
         busy = true;
