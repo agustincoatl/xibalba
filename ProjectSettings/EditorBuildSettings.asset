@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Menu.unity
+    path: Assets/Scenes/Menu options/Menu.unity
     guid: 0eda3243f6a921b45bd18d21fa07d339
   - enabled: 1
     path: Assets/Scenes/Level-01/Start.unity
@@ -32,12 +32,39 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Menu options/Credits.unity
     guid: ece801fff81fce24bbcfeb72556bf92b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/a.unity
     guid: 866590cd041f9f94cbd1ae8637aea8ba
   - enabled: 1
     path: Assets/Scenes/Room-02.unity
     guid: 313a1407241a4d94e8c03b210d0e1537
+  - enabled: 1
+    path: Assets/Scenes/Level-02/Room-boss.unity
+    guid: 9563cf7ae7ed51b4498d567f83d4797f
+  - enabled: 1
+    path: Assets/Scenes/Level-00002/Room-01.2.unity
+    guid: 3a2343c3140d3f247a4d64aa9b78188c
+  - enabled: 1
+    path: Assets/Scenes/Level-00002/Room-01 piso de abajo.unity
+    guid: 1cd7d8e4f99fae84ca06f5406090ed78
+  - enabled: 1
+    path: Assets/Scenes/Level-00002/Room-00 sala principal.unity
+    guid: 4d9d0877355f47f4cbdf92be3c9015e8
+  - enabled: 1
+    path: Assets/Scenes/Level-02/2Room-00.unity
+    guid: 25439f0ed90528c489fed1fe70be5095
+  - enabled: 1
+    path: Assets/Scenes/Level-02/2Room-01.unity
+    guid: 3401afee6d1edfe4aa6cfd5553273246
+  - enabled: 1
+    path: Assets/Scenes/Level-02/2Room-02.unity
+    guid: fd5bd0a71ad6a384387c2c9942736708
+  - enabled: 1
+    path: Assets/Scenes/Level-02/2Room-03.unity
+    guid: fc9f1f53c81564f40b9c375736c40b42
+  - enabled: 1
+    path: Assets/Scenes/Level-02/2Room-Battle.unity
+    guid: ace2732b1f63c0346b186f4e21078d4a
   - enabled: 0
     path: Assets/Scenes/Start1-malo.unity
     guid: 0b363785d6d85a5439a10ecbc21e7ed9

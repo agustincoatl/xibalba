@@ -784,7 +784,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 2107979699285434549, guid: 3e49c03e73aa4f343956fc20e28b50c9, type: 3}
+  m_Sprite: {fileID: -198938125430884413, guid: de9ffb769a4841540bf967a0c07669a4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -992,11 +992,25 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Controlles:
+  m_text: 'Controles
 
-    "a" y "D" para  desplazarse de izquierda  derecha.
 
-    Barra espaciadora para salto y ya'
+    movimiento
+
+    salto Barra espaciadora
+
+    Desplazamiento A y D
+
+
+    Ataque cuerpo a cuerpo: J
+
+    Atque arojadizo: K
+
+    Curacion con concetracion: H
+
+    Curacion consumible: Q
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
@@ -1023,7 +1037,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 34.3
+  m_fontSize: 48.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1062,7 +1076,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -330.3147, y: 0, z: -340.9701, w: -328.18365}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
